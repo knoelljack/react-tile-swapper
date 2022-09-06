@@ -1,11 +1,13 @@
 .tileContainer {
-    border: 1px solid gray;
+    border: 3px solid;
     display: flex;
     flex-wrap: wrap;
     border-radius: 10px;
     background-color: darkgray;
+    padding: 5px;
+    /* gap: 2px; */
 }
 .picTile {
-    margin: 5px;
-    border: 2px solid red;
+    /* margin: 5px; */
+    /* border: 2px solid red; */
 }

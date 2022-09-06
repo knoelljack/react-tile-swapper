@@ -8,8 +8,10 @@ const PicTiles = () => {
 
     const [data,setData] = useState({});
     const [pictureTiles,setPictureTiles] = useState([]);
+    const [sortedTiles,setSortedTiles] = useState([]);
     const [tileIsSelected,setTileIsSelected] = useState(false);
     const [selectedTileID,setSelectedTileID] = useState(null);
+    const [solved,setSolved] = useState(false);
 
     useEffect(() => {
         axios.get(`https://www.rijksmuseum.nl/api/nl/collection/SK-C-5/tiles?key=${key}`)
@@ -17,6 +19,12 @@ const PicTiles = () => {
                 console.log(res.data.levels);
                 setData(res.data.levels[1]);
                 setPictureTiles(shuffle(res.data.levels[1].tiles));
+                setSortedTiles(pictureTiles.sort((a,b) => {
+                    if(a.x === b.x){
+                        return a.y-b.y;
+                    }
+                    return a.x-b.x;
+                }))
             })
             .catch( err => console.log(err))
     }, [])
@@ -32,11 +40,20 @@ const PicTiles = () => {
         return b;
     }
 
+    const handleSwap = (id) => {
+
+    }
+
+    const checkIfSorted = () => {
+        
+    }
+
   return (
     <>
         <div className="tileContainer" style={{
             height: data.height,
-            width: data.width
+            width: data.width,
+            borderColor: solved ? 'green' : 'red',
             }}>
             {
                 pictureTiles.map((tile,index) => {
@@ -46,7 +63,7 @@ const PicTiles = () => {
                             // height: data.height/pictureTiles.length,
                             // width: data.width/pictureTiles.length,
                             }}>
-                            <img src={tile.url} alt="img" />
+                            <img src={tile.url} alt="Shuffled Image" />
                         </div>
                     )
                 })
