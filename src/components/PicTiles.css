@@ -11,3 +11,7 @@
     /* margin: 5px; */
     /* border: 2px solid red; */
 }
+
+.selected {
+    opacity: 0.5;
+}

@@ -13,13 +13,14 @@ const PicTiles = () => {
     const [selectedTileID,setSelectedTileID] = useState(null);
     const [solved,setSolved] = useState(false);
 
+    //RETRIEVE TILE DATA
     useEffect(() => {
         axios.get(`https://www.rijksmuseum.nl/api/nl/collection/SK-C-5/tiles?key=${key}`)
             .then( res => {
                 console.log(res.data.levels);
                 setData(res.data.levels[1]);
                 setPictureTiles(shuffle(res.data.levels[1].tiles));
-                setSortedTiles(pictureTiles.sort((a,b) => {
+                setSortedTiles(res.data.levels[1].tiles.sort((a,b) => {
                     if(a.x === b.x){
                         return a.y-b.y;
                     }
@@ -29,6 +30,7 @@ const PicTiles = () => {
             .catch( err => console.log(err))
     }, [])
 
+    //SHUFFLE FUNCTION FOR RANDOMIZING TILE ORDER
     const shuffle = (a) => {
         const b = a.slice();
 
@@ -40,12 +42,34 @@ const PicTiles = () => {
         return b;
     }
 
-    const handleSwap = (id) => {
-
+    //HANDLING SWAP
+    const handleSwap = (index) => {
+        //if a tile has already been selected, then proceed to swap them
+        if(tileIsSelected){
+            swap(selectedTileID,index);
+            if(checkIfSolved(pictureTiles,data.levels[1].tiles)) setSolved(true);
+            console.log(solved)
+        } else { //otherwise set the selected tile index as the 1st selected tile
+            setTileIsSelected(true);
+            setSelectedTileID(index);
+        }
     }
 
-    const checkIfSorted = () => {
-        
+    //CHECK IF PUZZLE HAS BEEN SOLVED
+    const checkIfSolved = (a,b) => {
+        console.log(a,b)
+        for(let i=0; i < a.length; i++){
+            console.log(a[i],b[i])
+            if(!(a[i].x === b[i].x) || !(a[i].y === b[i].y) || !(a[i].url === b[i].url)) return false;
+        }
+        return true;
+    }
+
+    //SWAP 2 TILES
+    const swap = (index1,index2) => {
+        let newTiles = [...pictureTiles];
+        [newTiles[index1],newTiles[index2]] = [newTiles[index2],newTiles[index1]];
+        setPictureTiles(newTiles);
     }
 
   return (
@@ -58,12 +82,10 @@ const PicTiles = () => {
             {
                 pictureTiles.map((tile,index) => {
                     return(
-                        <div key={index} className="picTile" style={{
-                            // backgroundImage: `url(${tile.url})`,
-                            // height: data.height/pictureTiles.length,
-                            // width: data.width/pictureTiles.length,
+                        <div key={index} onClick={() => handleSwap(index)} className="picTile" style={{
+                            opacity: selectedTileID === index ? 0.5 : 1,
                             }}>
-                            <img src={tile.url} alt="Shuffled Image" />
+                            <img src={tile.url} alt="Shuffled Tile" />
                         </div>
                     )
                 })
