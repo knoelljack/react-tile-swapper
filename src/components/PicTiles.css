@@ -1,0 +1,11 @@
+.tileContainer {
+    border: 1px solid gray;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    background-color: darkgray;
+}
+.picTile {
+    margin: 5px;
+    border: 2px solid red;
+}
