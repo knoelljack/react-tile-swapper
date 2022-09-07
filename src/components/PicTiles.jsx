@@ -97,10 +97,11 @@ const PicTiles = () => {
 
   return (
     <>
+        <p>You have <span style={{color:'red'}}>{moves}</span> available moves left.</p>
         <div className="tileContainer" style={{
             height: data.height,
             width: data.width,
-            border: solved ? '5px solid green' : 'none',
+            border: solved && moves >= 0 ? '5px solid green' : 'none',
             }}>
             {
                 pictureTiles.map((tile,index) => {
@@ -109,7 +110,7 @@ const PicTiles = () => {
                         <div key={index} onClick={() => handleSwap(index)} className="picTile" style={{
                             opacity: selectedTileID === index ? 0.5 : 1,
                             }}>
-                            <img src={tile.url} alt="Shuffled Tile" />
+                            <img src={tile.url} alt="Tile" />
                         </div>
                     )
                 })
@@ -120,8 +121,12 @@ const PicTiles = () => {
             <div>
                 <p id="winFont">You Win!</p>
                 <button onClick={() => handleReset()}>Reset</button>
-            </div> : 
-            <p>You have {moves} available moves left.</p>
+            </div> : !moves ?
+                <>
+                    <p id="loseFont">You Lost!</p>
+                    <button onClick={() => handleReset()}>Reset</button>
+                </> :
+            <p>Keep Trying</p>
         }
     </>
   )
