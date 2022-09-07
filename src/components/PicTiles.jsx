@@ -82,6 +82,14 @@ const PicTiles = () => {
         setTileIsSelected(false);
     }
 
+    //RESET FUNCTION
+    const handleReset = () => {
+        setPictureTiles([]);
+        setSolved(false);
+        setSortedTiles([]);
+        setTileIsSelected(null);
+    }
+
   return (
     <>
         <div className="tileContainer" style={{
@@ -91,6 +99,7 @@ const PicTiles = () => {
             }}>
             {
                 pictureTiles.map((tile,index) => {
+                    console.log(tile.url,tile.x,tile.y,index)
                     return(
                         <div key={index} onClick={() => handleSwap(index)} className="picTile" style={{
                             opacity: selectedTileID === index ? 0.5 : 1,
