@@ -19,13 +19,20 @@ const PicTiles = () => {
             .then( res => {
                 console.log(res.data.levels);
                 setData(res.data.levels[1]);
-                setPictureTiles(shuffle(res.data.levels[1].tiles));
+                let tilesFromAPI = res.data.levels[1].tiles;
+                // let tilesWithIDs = [];
+                // for(let i=0; i<tilesFromAPI.length; i++){
+                //     let newTile = {...tilesFromAPI[i],id:i};
+                //     tilesWithIDs.push(newTile);
+                // }
+                setPictureTiles(shuffle(tilesFromAPI));
                 setSortedTiles(res.data.levels[1].tiles.sort((a,b) => {
-                    if(a.x === b.x){
-                        return a.y-b.y;
+                    if(a.y === b.y){
+                        return a.x-b.x;
                     }
-                    return a.x-b.x;
+                    return a.y-b.y;
                 }))
+                // setSortedTiles(tilesFromAPI);
             })
             .catch( err => console.log(err))
     }, [])
@@ -67,6 +74,7 @@ const PicTiles = () => {
 
     //SWAP 2 TILES
     const swap = (index1,index2) => {
+        console.log(index1,index2)
         let newTiles = [...pictureTiles];
         [newTiles[index1],newTiles[index2]] = [newTiles[index2],newTiles[index1]];
         setPictureTiles(newTiles);
@@ -79,7 +87,7 @@ const PicTiles = () => {
         <div className="tileContainer" style={{
             height: data.height,
             width: data.width,
-            borderColor: solved ? 'green' : 'red',
+            border: solved ? '5px solid green' : 'none',
             }}>
             {
                 pictureTiles.map((tile,index) => {

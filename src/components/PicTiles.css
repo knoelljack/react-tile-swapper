@@ -1,14 +1,13 @@
 .tileContainer {
     /* maybe add border only if solved so can blend in with background? */
-    border: 3px solid;
+    /* border: 3px solid; */
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    /* flex-direction: row; */
     border-radius: 10px;
-    background-color: darkgray;
+    /* background-color: darkgray; */
     padding: 10px;
 }
-
 
 #winFont {
     color: green;
