@@ -12,6 +12,8 @@ const PicTiles = () => {
     const [tileIsSelected,setTileIsSelected] = useState(false);
     const [selectedTileID,setSelectedTileID] = useState(null);
     const [solved,setSolved] = useState(false);
+    const [moves,setMoves] = useState(0);
+    const [reset,setReset] = useState(false);
 
     //RETRIEVE TILE DATA
     useEffect(() => {
@@ -20,6 +22,7 @@ const PicTiles = () => {
                 console.log(res.data.levels);
                 setData(res.data.levels[1]);
                 let tilesFromAPI = res.data.levels[1].tiles;
+                setMoves(tilesFromAPI.length * 3);
                 // let tilesWithIDs = [];
                 // for(let i=0; i<tilesFromAPI.length; i++){
                 //     let newTile = {...tilesFromAPI[i],id:i};
@@ -35,7 +38,7 @@ const PicTiles = () => {
                 // setSortedTiles(tilesFromAPI);
             })
             .catch( err => console.log(err))
-    }, [])
+    }, [reset])
 
     //SHUFFLE FUNCTION FOR RANDOMIZING TILE ORDER
     const shuffle = (a) => {
@@ -74,20 +77,22 @@ const PicTiles = () => {
 
     //SWAP 2 TILES
     const swap = (index1,index2) => {
-        console.log(index1,index2)
+        // console.log(index1,index2)
         let newTiles = [...pictureTiles];
         [newTiles[index1],newTiles[index2]] = [newTiles[index2],newTiles[index1]];
         setPictureTiles(newTiles);
         setSelectedTileID(null);
         setTileIsSelected(false);
+        setMoves(moves - 1);
     }
 
     //RESET FUNCTION
     const handleReset = () => {
-        setPictureTiles([]);
+        // setPictureTiles([]);
         setSolved(false);
-        setSortedTiles([]);
+        // setSortedTiles([]);
         setTileIsSelected(null);
+        setReset(!reset);
     }
 
   return (
@@ -99,7 +104,7 @@ const PicTiles = () => {
             }}>
             {
                 pictureTiles.map((tile,index) => {
-                    console.log(tile.url,tile.x,tile.y,index)
+                    // console.log(tile.url,tile.x,tile.y,index)
                     return(
                         <div key={index} onClick={() => handleSwap(index)} className="picTile" style={{
                             opacity: selectedTileID === index ? 0.5 : 1,
@@ -111,12 +116,12 @@ const PicTiles = () => {
             }
         </div>
         {
-            solved ?
+            solved && moves > 0?
             <div>
                 <p id="winFont">You Win!</p>
-                <button>Reset</button>
+                <button onClick={() => handleReset()}>Reset</button>
             </div> : 
-            <p>Keep Trying</p>
+            <p>You have {moves} available moves left.</p>
         }
     </>
   )
