@@ -47,7 +47,8 @@ const PicTiles = () => {
         //if a tile has already been selected, then proceed to swap them
         if(tileIsSelected){
             swap(selectedTileID,index);
-            if(checkIfSolved(pictureTiles,data.levels[1].tiles)) setSolved(true);
+            //check if the last made move successfully completed the board
+            if(checkIfSolved(pictureTiles,sortedTiles)) setSolved(true);
             console.log(solved)
         } else { //otherwise set the selected tile index as the 1st selected tile
             setTileIsSelected(true);
@@ -59,7 +60,6 @@ const PicTiles = () => {
     const checkIfSolved = (a,b) => {
         console.log(a,b)
         for(let i=0; i < a.length; i++){
-            console.log(a[i],b[i])
             if(!(a[i].x === b[i].x) || !(a[i].y === b[i].y) || !(a[i].url === b[i].url)) return false;
         }
         return true;
@@ -70,6 +70,8 @@ const PicTiles = () => {
         let newTiles = [...pictureTiles];
         [newTiles[index1],newTiles[index2]] = [newTiles[index2],newTiles[index1]];
         setPictureTiles(newTiles);
+        setSelectedTileID(null);
+        setTileIsSelected(false);
     }
 
   return (
@@ -91,6 +93,14 @@ const PicTiles = () => {
                 })
             }
         </div>
+        {
+            solved ?
+            <div>
+                <p id="winFont">You Win!</p>
+                <button>Reset</button>
+            </div> : 
+            <p>Keep Trying</p>
+        }
     </>
   )
 }

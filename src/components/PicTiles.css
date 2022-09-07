@@ -1,17 +1,16 @@
 .tileContainer {
+    /* maybe add border only if solved so can blend in with background? */
     border: 3px solid;
     display: flex;
     flex-wrap: wrap;
+    flex-direction: row;
     border-radius: 10px;
     background-color: darkgray;
-    padding: 5px;
-    /* gap: 2px; */
-}
-.picTile {
-    /* margin: 5px; */
-    /* border: 2px solid red; */
+    padding: 10px;
 }
 
-.selected {
-    opacity: 0.5;
+
+#winFont {
+    color: green;
+    font-size: 32pt;
 }

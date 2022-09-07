@@ -6,6 +6,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h1>Tile Swapper Game</h1>
+        <p>Click on two tiles in a row to swap them until image is complete</p>
         <PicTiles></PicTiles>
       </div>
     </div>
