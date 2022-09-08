@@ -4,6 +4,24 @@ import './PicTiles.css'
 
 const key = process.env.REACT_APP_PIC_API_KEY;
 
+const easyMode = {
+    name: 'EASY',
+    url: `https://www.rijksmuseum.nl/api/nl/collection/SK-C-5/tiles?key=${key}`,
+    level: 1,
+}
+const mediumMode = {
+    name: 'MEDIUM',
+    url: `https://www.rijksmuseum.nl/api/nl/collection/SK-A-4688/tiles?key=${key}`,
+    level: 1,
+}
+const hardMode = {
+    name: 'HARD',
+    url: `https://www.rijksmuseum.nl/api/nl/collection/SK-A-1718/tiles?key=${key}`,
+    level: 0,
+};
+
+const modeOptions = [easyMode,mediumMode,hardMode];
+
 const PicTiles = () => {
 
     const [data,setData] = useState({});
@@ -14,14 +32,15 @@ const PicTiles = () => {
     const [solved,setSolved] = useState(false);
     const [moves,setMoves] = useState(0);
     const [reset,setReset] = useState(false);
+    const [mode,setMode] = useState(easyMode);
 
     //RETRIEVE TILE DATA
     useEffect(() => {
-        axios.get(`https://www.rijksmuseum.nl/api/nl/collection/SK-C-5/tiles?key=${key}`)
+        axios.get(mode.url)
             .then( res => {
                 console.log(res.data.levels);
-                setData(res.data.levels[1]);
-                let tilesFromAPI = res.data.levels[1].tiles;
+                setData(res.data.levels[mode.level]);
+                let tilesFromAPI = data.tiles;
                 setMoves(tilesFromAPI.length * 3);
                 // let tilesWithIDs = [];
                 // for(let i=0; i<tilesFromAPI.length; i++){
@@ -29,7 +48,7 @@ const PicTiles = () => {
                 //     tilesWithIDs.push(newTile);
                 // }
                 setPictureTiles(shuffle(tilesFromAPI));
-                setSortedTiles(res.data.levels[1].tiles.sort((a,b) => {
+                setSortedTiles(data.tiles.sort((a,b) => {
                     if(a.y === b.y){
                         return a.x-b.x;
                     }
@@ -38,7 +57,7 @@ const PicTiles = () => {
                 // setSortedTiles(tilesFromAPI);
             })
             .catch( err => console.log(err))
-    }, [reset])
+    }, [reset,mode])
 
     //SHUFFLE FUNCTION FOR RANDOMIZING TILE ORDER
     const shuffle = (a) => {
@@ -88,15 +107,25 @@ const PicTiles = () => {
 
     //RESET FUNCTION
     const handleReset = () => {
-        // setPictureTiles([]);
         setSolved(false);
-        // setSortedTiles([]);
         setTileIsSelected(null);
         setReset(!reset);
     }
 
+    //HANDLE MODE SELECTION
+    const handleChange = (e) => {
+        setMode(+e.target.value);
+    }
+
   return (
     <>
+        <select onChange={handleChange}>
+            {
+                modeOptions.map((option,index) => (
+                    <option key={index} value={index}>{option.name}</option>
+                ))
+            }
+        </select>
         <p>You have <span style={{color:'red'}}>{moves}</span> available moves left.</p>
         <div className="tileContainer" style={{
             height: data.height,
