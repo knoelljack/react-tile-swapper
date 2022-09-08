@@ -4,6 +4,8 @@ import './PicTiles.css'
 
 const key = process.env.REACT_APP_PIC_API_KEY;
 
+
+//ADD EASY,MED,HARD MODES FOR EXTRA FEATURES FOR USER TO CHOOSE
 const easyMode = {
     name: 'EASY',
     url: `https://www.rijksmuseum.nl/api/nl/collection/SK-C-5/tiles?key=${key}`,
@@ -27,7 +29,6 @@ const PicTiles = () => {
     const [data,setData] = useState({});
     const [pictureTiles,setPictureTiles] = useState([]);
     const [sortedTiles,setSortedTiles] = useState([]);
-    const [tileIsSelected,setTileIsSelected] = useState(false);
     const [selectedTileID,setSelectedTileID] = useState(null);
     const [solved,setSolved] = useState(false);
     const [moves,setMoves] = useState(0);
@@ -38,32 +39,29 @@ const PicTiles = () => {
     useEffect(() => {
         axios.get(mode.url)
             .then( res => {
-                console.log(res.data.levels);
                 setData(res.data.levels[mode.level]);
-                let tilesFromAPI = data.tiles;
+                let tilesFromAPI = res.data.levels[mode.level].tiles;
                 setMoves(tilesFromAPI.length * 3);
-                // let tilesWithIDs = [];
-                // for(let i=0; i<tilesFromAPI.length; i++){
-                //     let newTile = {...tilesFromAPI[i],id:i};
-                //     tilesWithIDs.push(newTile);
-                // }
                 setPictureTiles(shuffle(tilesFromAPI));
-                setSortedTiles(data.tiles.sort((a,b) => {
+                setSortedTiles(res.data.levels[mode.level].tiles.sort((a,b) => {
                     if(a.y === b.y){
                         return a.x-b.x;
                     }
                     return a.y-b.y;
                 }))
-                // setSortedTiles(tilesFromAPI);
             })
             .catch( err => console.log(err))
     }, [reset,mode])
+
+    // useEffect(() => {
+    //     if(solved) setSolved(solved);
+    // },[solved]);
 
     //SHUFFLE FUNCTION FOR RANDOMIZING TILE ORDER
     const shuffle = (a) => {
         const b = a.slice();
 
-        for (let i = b.length - 1; i > 0; i--) {
+        for (let i = b.length - 1; i >= 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [b[i], b[j]] = [b[j], b[i]];
         }
@@ -74,47 +72,43 @@ const PicTiles = () => {
     //HANDLING SWAP
     const handleSwap = (index) => {
         //if a tile has already been selected, then proceed to swap them
-        if(tileIsSelected){
+        if(selectedTileID !== null){
             swap(selectedTileID,index);
             //check if the last made move successfully completed the board
             if(checkIfSolved(pictureTiles,sortedTiles)) setSolved(true);
-            console.log(solved)
         } else { //otherwise set the selected tile index as the 1st selected tile
-            setTileIsSelected(true);
             setSelectedTileID(index);
         }
     }
 
     //CHECK IF PUZZLE HAS BEEN SOLVED
     const checkIfSolved = (a,b) => {
-        console.log(a,b)
+        //check if the x and y coordinates and the url all match the sorted version, if so then complete
         for(let i=0; i < a.length; i++){
-            if(!(a[i].x === b[i].x) || !(a[i].y === b[i].y) || !(a[i].url === b[i].url)) return false;
+            //probably can optimize this to have a count and only check if the two that are swapped are in the right place. If count == length then solved => true
+            if(a[i].x !== b[i].x || a[i].y !== b[i].y || a[i].url !== b[i].url) return false;
         }
         return true;
     }
 
     //SWAP 2 TILES
     const swap = (index1,index2) => {
-        // console.log(index1,index2)
         let newTiles = [...pictureTiles];
         [newTiles[index1],newTiles[index2]] = [newTiles[index2],newTiles[index1]];
         setPictureTiles(newTiles);
         setSelectedTileID(null);
-        setTileIsSelected(false);
         setMoves(moves - 1);
     }
 
     //RESET FUNCTION
     const handleReset = () => {
         setSolved(false);
-        setTileIsSelected(null);
         setReset(!reset);
     }
 
     //HANDLE MODE SELECTION
     const handleChange = (e) => {
-        setMode(+e.target.value);
+        setMode(modeOptions[e.target.value]);
     }
 
   return (
@@ -134,7 +128,6 @@ const PicTiles = () => {
             }}>
             {
                 pictureTiles.map((tile,index) => {
-                    // console.log(tile.url,tile.x,tile.y,index)
                     return(
                         <div key={index} onClick={() => handleSwap(index)} className="picTile" style={{
                             opacity: selectedTileID === index ? 0.5 : 1,
